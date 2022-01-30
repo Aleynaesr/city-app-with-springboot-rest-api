@@ -45,7 +45,7 @@ An application built using Rest API with SpringBoot that shows the cities.
 
 ## How it builded :
 
-- First, the api was created with the SprinBoot Java framework.You can see codes in CityApi.
+- First, the api was created with the SpringBoot Java framework.You can see the codes in CityApi file.
 
 #### More Information --> <a href="http://aleynaeser.site/springboot-ile-rest-api-olusturmak/">Creating Rest API with SpringBoot</a>
 
