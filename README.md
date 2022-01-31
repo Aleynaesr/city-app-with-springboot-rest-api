@@ -49,18 +49,18 @@ An application built using Rest API with SpringBoot that shows the cities.
 
 #### More Information --> <a href="http://aleynaeser.site/springboot-ile-rest-api-olusturmak/">Creating Rest API with SpringBoot</a>
 
-- It was then converted to api json file format and downloaded.
+- Then, city model was created and api access was provided with http.
 
-#### More Information --> <a href="http://aleynaeser.site/postman-ile-json-file-indirmek/">Downloading Json file with Postman</a>
-
-- Cities json file is sent inside the assets file in Flutter.
-- City values are printed by reading the Json file on the homepage.
-
-#### More Information --> <a href="http://aleynaeser.site/flutter-local-json-dosyasindan-veri-okumak-sehir-ornegi/">Reading Data from Flutter Local Json File</a>
-
-- In addition, the cities printed on the screen were added to the favorite list and displayed on the second page.
+- Cities shown on home page and also the cities printed on the screen were added to the favorite list and displayed on the second page.
 
 ## To use this app follow below instructions :
+
+- Run the City Api file using an IDE and make sure you view the json data in the web browser.
+<img src="https://user-images.githubusercontent.com/45822686/151808368-840034c2-6250-4168-a7bc-55a612505337.png" style="max-width: 100%;"> 
+
+- Then write your own ip4 address to the url in CityApi.dart 
+
+ ` 'http://Your_IP_Address:8080/cities' `
 
 - To run the flutter application, clone this app using below syntax:
 
