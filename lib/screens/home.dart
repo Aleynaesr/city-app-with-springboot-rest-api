@@ -1,8 +1,26 @@
 import 'dart:convert';
 
+import 'package:cities/model/city.dart';
 import 'package:flutter/material.dart';
 import 'package:cities/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+
+
+Future<City> fetchCities() async {
+  final response = await http.get(Uri.parse('http://192.168.1.21:8080/cities'));
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    return City.fromJson(jsonDecode(response.body));
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load cities');
+  }
+}
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -11,6 +29,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late Future<City> cities;
   List<String> favoriteCityList = [];
 
   _saveList(list) async {
@@ -31,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _getSavedList();
+    cities = fetchCities();
   }
 
   @override
@@ -41,15 +61,12 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: topAppBar,
         body: TabBarView(
           children: [
-            // Read json file
-            FutureBuilder(
-                future: DefaultAssetBundle.of(context)
-                    .loadString("assets/cities.json"),
-                builder: (context, snapshot) {
-                  var mydata = json.decode(snapshot.data.toString());
+            FutureBuilder<City>(
+                future: cities,
+                builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(
-                      itemCount: mydata == null ? 0 : mydata.length,
+                      itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
                         return Card(
                           shadowColor: mainColor,
@@ -69,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   leading: Padding(
                                     padding: const EdgeInsets.all(15.0),
                                     child: Text(
-                                      mydata[index]["city"],
+                                      snapshot.data!.city,
                                     ),
                                   ),
                                 ),
@@ -83,9 +100,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onPressed: () {
                                     setState(() {
                                       if (!favoriteCityList
-                                          .contains(mydata[index]["city"])) {
+                                          .contains(snapshot.data!.city)) {
                                         favoriteCityList
-                                            .add(mydata[index]["city"]);
+                                            .add(snapshot.data!.city);
                                       }
                                       _saveList(favoriteCityList);
                                     });
