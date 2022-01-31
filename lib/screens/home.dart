@@ -1,26 +1,8 @@
-import 'dart:convert';
-
 import 'package:cities/model/city.dart';
+import 'package:cities/model/city_api.dart';
 import 'package:flutter/material.dart';
 import 'package:cities/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-
-
-Future<City> fetchCities() async {
-  final response = await http.get(Uri.parse('http://192.168.1.21:8080/cities'));
-
-  if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    return City.fromJson(jsonDecode(response.body));
-  } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
-    throw Exception('Failed to load cities');
-  }
-}
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -29,7 +11,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Future<City> cities;
+  late Future<List<City>> cities;
   List<String> favoriteCityList = [];
 
   _saveList(list) async {
@@ -61,9 +43,9 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: topAppBar,
         body: TabBarView(
           children: [
-            FutureBuilder<City>(
+            FutureBuilder<List<City>>(
                 future: cities,
-                builder: (context, AsyncSnapshot snapshot) {
+                builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(
                       itemCount: snapshot.data!.length,
@@ -86,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   leading: Padding(
                                     padding: const EdgeInsets.all(15.0),
                                     child: Text(
-                                      snapshot.data!.city,
+                                      snapshot.data![index].city,
                                     ),
                                   ),
                                 ),
@@ -99,10 +81,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: ElevatedButton(
                                   onPressed: () {
                                     setState(() {
-                                      if (!favoriteCityList
-                                          .contains(snapshot.data!.city)) {
+                                      if (!favoriteCityList.contains(
+                                          snapshot.data![index].city)) {
                                         favoriteCityList
-                                            .add(snapshot.data!.city);
+                                            .add(snapshot.data![index].city);
                                       }
                                       _saveList(favoriteCityList);
                                     });
@@ -130,9 +112,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                     );
-                  } else {
-                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
                   }
+                  return const CircularProgressIndicator();
                 }),
             favoriteCityList.isEmpty
                 ? const Center(
